@@ -1,3 +1,2 @@
-# blackboard_server
 Blackboard
 ==========
