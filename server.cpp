@@ -1,9 +1,17 @@
 #include <QHostAddress>
 #include "server.h"
 
-server::server() {}
+//=============================================================================
+// server
+//=============================================================================
+server::server()
+{
+    connect(this, &QTcpServer::newConnection, this, &server::slotNewConnection);
+}
+//_____________________________________________________________________________
 
 server::~server() {}
+//_____________________________________________________________________________
 
 void server::startServer()
 {
@@ -16,30 +24,33 @@ void server::startServer()
         qDebug() << "Not listening";
     }
 }
+//_____________________________________________________________________________
 
-void server::incomingConnection(qintptr socketDescriptor)
+void server::slotNewConnection()
 {
-    socket = new QTcpSocket(this);
-    socket->setSocketDescriptor(socketDescriptor);
+    socket = this->nextPendingConnection();
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(sockReady()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisc()));
+    connect(socket, &QTcpSocket::readyRead, this, &server::slotReadyRead);
+    connect(socket, &QTcpSocket::disconnected, this, &server::slotDisconnected);
 
-    qDebug() << socketDescriptor << " Client connected";
+    qDebug() << socket->socketDescriptor() << " client connected";
 
     socket->write("You are connect");
     qDebug() << "Send client connect status - YES";
 }
+//_____________________________________________________________________________
 
-void server::sockReady()
+void server::slotReadyRead()
 {
-    Data = socket->readAll();
+    QByteArray Data = socket->readAll();
     qDebug() << "Message from client: " << Data;
     socket->write(Data);
 }
+//_____________________________________________________________________________
 
-void server::sockDisc()
+void server::slotDisconnected()
 {
     qDebug() << "Disconnect";
     socket->deleteLater();
 }
+//=============================================================================

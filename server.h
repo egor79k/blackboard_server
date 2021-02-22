@@ -11,14 +11,15 @@ public:
     server();
     ~server();
 
-    QTcpSocket* socket;
-    QByteArray Data;
+    void startServer();       // Start listening incoming connections
 
 public slots:
-    void startServer();
-    void incomingConnection(qintptr socketDescriptor);
-    void sockReady(); // Ready to read
-    void sockDisc(); // Client disconnect
+    void slotNewConnection(); // New pending connection
+    void slotReadyRead();     // Client socket ready to read
+    void slotDisconnected();    // Client disconnected
+
+private:
+    QTcpSocket* socket;
 };
 
 #endif // SERVER_H
