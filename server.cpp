@@ -28,29 +28,37 @@ void server::startServer()
 
 void server::slotNewConnection()
 {
-    socket = this->nextPendingConnection();
+    QTcpSocket *socket = this->nextPendingConnection();
 
     connect(socket, &QTcpSocket::readyRead, this, &server::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected, this, &server::slotDisconnected);
 
-    qDebug() << socket->socketDescriptor() << " client connected";
+    qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
-    socket->write("You are connect");
-    qDebug() << "Send client connect status - YES";
+    socket->write("You are connect\n");
+    qDebug() << "|| Send client connect status";
+
+    clients.insert(socket);
+    for (auto client: clients)
+        client->write("New client connected");
 }
 //_____________________________________________________________________________
 
 void server::slotReadyRead()
 {
-    QByteArray Data = socket->readAll();
-    qDebug() << "Message from client: " << Data;
-    socket->write(Data);
+    QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
+    QByteArray data = socket->readAll();
+    qDebug() << "| Message from" << socket->socketDescriptor() << " client: " << data;
+    for (auto client: clients)
+        client->write(data);
 }
 //_____________________________________________________________________________
 
 void server::slotDisconnected()
 {
-    qDebug() << "Disconnect";
-    socket->deleteLater();
+    QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
+    qDebug() << "| Client disconnected";
+    clients.remove(socket);
+    socket->close();
 }
 //=============================================================================
