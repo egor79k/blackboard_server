@@ -4,7 +4,7 @@ QT +=network
 
 CONFIG += c++11
 
-TARGET = jsonserver
+TARGET = server
 CONFIG += console
 CONFIG -= app_bundle
 

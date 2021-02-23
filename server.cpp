@@ -38,7 +38,7 @@ void server::slotNewConnection()
     socket->write("You are connect\n");
     qDebug() << "|| Send client connect status";
 
-    clients.insert(socket);
+    clients.push_back(socket);
     for (auto client: clients)
         client->write("New client connected");
 }
@@ -58,7 +58,7 @@ void server::slotDisconnected()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     qDebug() << "| Client disconnected";
-    clients.remove(socket);
+    clients.removeOne(socket);
     socket->close();
 }
 //=============================================================================

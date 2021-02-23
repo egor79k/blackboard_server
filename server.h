@@ -3,7 +3,7 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QSet>
+#include <QList>
 
 class server : public QTcpServer
 {
@@ -20,7 +20,7 @@ public slots:
     void slotDisconnected();    // Client disconnected
 
 private:
-    QSet<QTcpSocket *> clients;
+    QList<QTcpSocket *> clients;
 };
 
 #endif // SERVER_H
