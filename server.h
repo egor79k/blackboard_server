@@ -3,7 +3,9 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QList>
+#include <QSet>
+
+#include "logger.h"
 
 class server : public QTcpServer
 {
@@ -12,7 +14,9 @@ public:
     server();
     ~server();
 
-    void startServer();       // Start listening incoming connections
+    void setLogger(Logger *_log);
+    void startListening(const QHostAddress &address = QHostAddress::Any, quint16 port = 0);       // Start listening incoming connections
+    void stopListening();
 
 public slots:
     void slotNewConnection(); // New pending connection
@@ -20,7 +24,8 @@ public slots:
     void slotDisconnected();    // Client disconnected
 
 private:
-    QList<QTcpSocket *> clients;
+    QSet<QTcpSocket *> clients;
+    Logger *log;
 };
 
 #endif // SERVER_H

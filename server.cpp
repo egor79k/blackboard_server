@@ -13,16 +13,29 @@ server::server()
 server::~server() {}
 //_____________________________________________________________________________
 
-void server::startServer()
+void server::setLogger(Logger *_log)
 {
-    if (this->listen(QHostAddress::Any, 5555))
+    log = _log;
+}
+//_____________________________________________________________________________
+
+void server::startListening(const QHostAddress &address, quint16 port)
+{
+    if (this->listen(address, port))
     {
-        qDebug() << "Listening";
+        *log << "| Start listening";
     }
     else
     {
-        qDebug() << "Not listening";
+        *log << "| Not listening";
     }
+}
+//_____________________________________________________________________________
+
+void server::stopListening()
+{
+    this->close();
+    *log << "| Stop listening";
 }
 //_____________________________________________________________________________
 
@@ -33,12 +46,12 @@ void server::slotNewConnection()
     connect(socket, &QTcpSocket::readyRead, this, &server::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected, this, &server::slotDisconnected);
 
-    qDebug() << "| Client " << socket->socketDescriptor() << " connected";
+    *log << "| Client " + QString::number(socket->socketDescriptor()) + " connected";
 
     socket->write("You are connect\n");
-    qDebug() << "|| Send client connect status";
+    *log << "|| Send client connect status";
 
-    clients.push_back(socket);
+    clients.insert(socket);
     for (auto client: clients)
         client->write("New client connected");
 }
@@ -48,7 +61,7 @@ void server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     QByteArray data = socket->readAll();
-    qDebug() << "| Message from" << socket->socketDescriptor() << " client: " << data;
+    *log << "| Message from " + QString::number(socket->socketDescriptor()) + " client: " + data;
     for (auto client: clients)
         client->write(data);
 }
@@ -57,8 +70,8 @@ void server::slotReadyRead()
 void server::slotDisconnected()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
-    qDebug() << "| Client disconnected";
-    clients.removeOne(socket);
+    *log << "| Client disconnected";
+    clients.remove(socket);
     socket->close();
 }
 //=============================================================================
