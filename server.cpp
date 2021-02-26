@@ -38,11 +38,7 @@ void server::slotNewConnection()
 
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
-    qDebug() << "|| Send client connect status";
-
     clients.push_back(socket);
-    for (auto client: clients)
-        client->write("New client connected");
 }
 //_____________________________________________________________________________
 
