@@ -17,7 +17,7 @@ public:
 public slots:
     void slotNewConnection(); // New pending connection
     void slotReadyRead();     // Client socket ready to read
-    void slotDisconnected();    // Client disconnected
+    void slotDisconnected();  // Client disconnected
 
 private:
     QList<QTcpSocket *> clients;

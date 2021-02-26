@@ -10,7 +10,10 @@ server::server()
 }
 //_____________________________________________________________________________
 
-server::~server() {}
+server::~server()
+{
+   this->close();
+}
 //_____________________________________________________________________________
 
 void server::startServer()
@@ -35,7 +38,6 @@ void server::slotNewConnection()
 
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
-    socket->write("You are connect\n");
     qDebug() << "|| Send client connect status";
 
     clients.push_back(socket);
@@ -48,7 +50,7 @@ void server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     QByteArray data = socket->readAll();
-    qDebug() << "| Message from" << socket->socketDescriptor() << " client: " << data;
+    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data;
     for (auto client: clients)
         client->write(data);
 }
