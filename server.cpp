@@ -4,7 +4,8 @@
 //=============================================================================
 // Server
 //=============================================================================
-Server::Server()
+Server::Server(Parser *parser_) :
+    parser(parser_)
 {
     connect(this, &QTcpServer::newConnection, this, &Server::slotNewConnection);
 }
@@ -28,11 +29,21 @@ void Server::startServer()
     }
 }
 //_____________________________________________________________________________
+// External API
+//_____________________________________________________________________________
 
-void Server::createLayer()
+void Server::addLayer(SApiArgs *args)
 {
 
 }
+//_____________________________________________________________________________
+
+void Server::wrongRequest(SApiArgs *args)
+{
+    qDebug() << "Wrong request recieved!";
+}
+//_____________________________________________________________________________
+// Slots
 //_____________________________________________________________________________
 
 void Server::slotNewConnection()
@@ -52,7 +63,9 @@ void Server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     QByteArray data = socket->readAll();
-    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data << "size:" << QString(data).split(' ')[0].toInt();
+    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data; //<< "size:" << QString(data).split(' ')[0].toInt();
+
+    parser->handleRequest(data, this);
 
     for (auto client: clients)
         client->write(data);

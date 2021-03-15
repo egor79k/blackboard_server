@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QObject>
 
-#include "server.h"
+class Server;
 
 //=============================================================================
 class Parser : public QObject
@@ -19,20 +19,6 @@ class Parser : public QObject
 
 public:
     virtual void handleRequest(const QByteArray &data, Server *server) = 0;
-};
-//=============================================================================
-
-
-//=============================================================================
-class JsonParser : public Parser
-{
-    Q_OBJECT
-
-    QMap<QString, void(Server::*)()> methods = {
-        {"create_layer", &Server::createLayer}};
-
-public:
-    void handleRequest(const QByteArray &data, Server *server);
 };
 //=============================================================================
 

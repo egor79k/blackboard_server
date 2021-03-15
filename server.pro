@@ -11,7 +11,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    parser.cpp \
+    parser_impl.cpp \
     server.cpp
 
 # The following define makes your compiler emit warnings if you use
@@ -27,5 +27,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     parser.h \
+    parser_impl.h \
     server.h
 
