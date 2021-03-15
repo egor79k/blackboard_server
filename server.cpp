@@ -2,21 +2,21 @@
 #include "server.h"
 
 //=============================================================================
-// server
+// Server
 //=============================================================================
-server::server()
+Server::Server()
 {
-    connect(this, &QTcpServer::newConnection, this, &server::slotNewConnection);
+    connect(this, &QTcpServer::newConnection, this, &Server::slotNewConnection);
 }
 //_____________________________________________________________________________
 
-server::~server()
+Server::~Server()
 {
    this->close();
 }
 //_____________________________________________________________________________
 
-void server::startServer()
+void Server::startServer()
 {
     if (this->listen(QHostAddress::Any, 5555))
     {
@@ -29,12 +29,18 @@ void server::startServer()
 }
 //_____________________________________________________________________________
 
-void server::slotNewConnection()
+void Server::createLayer()
+{
+
+}
+//_____________________________________________________________________________
+
+void Server::slotNewConnection()
 {
     QTcpSocket *socket = this->nextPendingConnection();
 
-    connect(socket, &QTcpSocket::readyRead, this, &server::slotReadyRead);
-    connect(socket, &QTcpSocket::disconnected, this, &server::slotDisconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &Server::slotReadyRead);
+    connect(socket, &QTcpSocket::disconnected, this, &Server::slotDisconnected);
 
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
@@ -42,17 +48,18 @@ void server::slotNewConnection()
 }
 //_____________________________________________________________________________
 
-void server::slotReadyRead()
+void Server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     QByteArray data = socket->readAll();
-    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data;
+    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data << "size:" << QString(data).split(' ')[0].toInt();
+
     for (auto client: clients)
         client->write(data);
 }
 //_____________________________________________________________________________
+void Server::slotDisconnected()
 
-void server::slotDisconnected()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
     qDebug() << "| Client disconnected";

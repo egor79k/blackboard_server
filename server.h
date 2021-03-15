@@ -5,14 +5,16 @@
 #include <QTcpSocket>
 #include <QList>
 
-class server : public QTcpServer
+class Server : public QTcpServer
 {
     Q_OBJECT
 public:
-    server();
-    ~server();
+    Server();
+    ~Server();
 
     void startServer();       // Start listening incoming connections
+
+    void createLayer();
 
 public slots:
     void slotNewConnection(); // New pending connection
