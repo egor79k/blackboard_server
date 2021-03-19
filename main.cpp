@@ -1,13 +1,12 @@
 #include <QCoreApplication>
 
-#include "parser_impl.h"
 #include "server.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    Server server(new JsonParser);
+    Server server;
     server.startServer();
 
     return a.exec();

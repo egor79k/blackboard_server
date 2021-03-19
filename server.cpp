@@ -4,8 +4,7 @@
 //=============================================================================
 // Server
 //=============================================================================
-Server::Server(Parser *parser_) :
-    parser(parser_)
+Server::Server()
 {
     connect(this, &QTcpServer::newConnection, this, &Server::slotNewConnection);
 }
@@ -32,13 +31,13 @@ void Server::startServer()
 // External API
 //_____________________________________________________________________________
 
-void Server::addLayer(SApiArgs *args)
+void Server::addLayer(const Serializer &args)
 {
-
+    qDebug() << "Add layer called!";
 }
 //_____________________________________________________________________________
 
-void Server::wrongRequest(SApiArgs *args)
+void Server::wrongRequest(const Serializer &args)
 {
     qDebug() << "Wrong request recieved!";
 }
@@ -62,13 +61,39 @@ void Server::slotNewConnection()
 void Server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
-    QByteArray data = socket->readAll();
-    qDebug() << "| Message from" << socket->socketDescriptor() << "client:" << data; //<< "size:" << QString(data).split(' ')[0].toInt();
 
-    parser->handleRequest(data, this);
+    uint64_t header_size = 0;
 
-    for (auto client: clients)
-        client->write(data);
+    while (socket->read(reinterpret_cast<char*>(&header_size), sizeof(header_size)) ==
+           sizeof(header_size))
+    {
+        Q_ASSERT(header_size > 0);
+
+        QByteArray data = socket->read(header_size);
+        Q_ASSERT(data.size() == header_size);
+
+        QJsonObject header = QJsonDocument::fromJson(data).object();
+        int arg_size = header["argument_size"].toInt();
+        Q_ASSERT(arg_size > 0);
+
+        data = socket->read(arg_size);
+        Q_ASSERT(data.size() == arg_size);
+
+#ifdef JSON_SERIALIZER
+        JsonSerializer serial_arg(data);
+#else
+        Q_ASSERT(false && "JSON_SERIALIZER undefined");
+#endif
+
+        Q_ASSERT(api_func.contains(header["method"].toString()));
+        qDebug() << "| Client" << socket->socketDescriptor() << "called" << header["method"].toString();
+        (this->*api_func[header["method"].toString()])(serial_arg);
+    }
+
+    //for (auto client: clients)
+        //client->write(data);
+
+    //
 }
 //_____________________________________________________________________________
 void Server::slotDisconnected()
