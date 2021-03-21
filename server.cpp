@@ -55,6 +55,7 @@ void Server::slotNewConnection()
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
     clients.push_back(socket);
+    clientsn.push_back(QSharedPointer<Client>(new Client(socket)));
 }
 //_____________________________________________________________________________
 
@@ -90,10 +91,8 @@ void Server::slotReadyRead()
         (this->*api_func[header["method"].toString()])(serial_arg);
     }
 
-    //for (auto client: clients)
-        //client->write(data);
-
-    //
+    //for (auto client: clientsn)
+        //client->write("Common message");
 }
 //_____________________________________________________________________________
 void Server::slotDisconnected()

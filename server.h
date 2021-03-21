@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QList>
 #include <QMap>
+#include <QSharedPointer>
 #include <QString>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -40,6 +41,7 @@ private:
     QMap<QString, void(Server::*)(const Serializer &)> api_func = {
         {"s_add_layer", &Server::addLayer}
 };
+    QList<QSharedPointer<Client>> clientsn;
     //QList<Layer> layers_list;
 };
 //=============================================================================
