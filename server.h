@@ -14,6 +14,7 @@
 
 #include "client_api.h"
 #include "serializers.h"
+#include "serializable_types.h"
 
 
 //=============================================================================
@@ -26,8 +27,8 @@ public:
 
     void startServer();       // Start listening incoming connections
 
-// External server API
-//--------------------
+// Server API functions
+//----------------------
     void addLayer(const Serializer &args);      // Add new layer to layers_list
     void wrongRequest(const Serializer &args);  // Unknown request
 
@@ -37,11 +38,12 @@ public slots:
     void slotDisconnected();  // Client disconnected
 
 private:
-    QList<QTcpSocket *> clients;
     QMap<QString, void(Server::*)(const Serializer &)> api_func = {
         {"s_add_layer", &Server::addLayer}
 };
-    QList<QSharedPointer<Client>> clientsn;
+    QList<QSharedPointer<Client>> clients;
+    Client::id_type curr_sender_id;
+    //QList<QTcpSocket *> clients;
     //QList<Layer> layers_list;
 };
 //=============================================================================

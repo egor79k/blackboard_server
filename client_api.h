@@ -5,16 +5,30 @@
 #include <QTcpSocket>
 
 #include "serializers.h"
+#include "serializable_types.h"
 
 //=============================================================================
-class Client : public QTcpSocket
+class Client : public QObject
 {
     Q_OBJECT
-public:
-    Client(QTcpSocket *socket);
 
-    void initClient(const Serializer& args);
-    void addLayer(const Serializer& args);
+public:
+    typedef int id_type;
+
+    Client(QTcpSocket *socket_);
+
+    bool operator==(const Client &other) const;
+
+    id_type getID() const;
+    QTcpSocket *getSocket() const;
+
+// Client API functions
+//----------------------
+    void initClient(const Serializer& args);  // Send init info for new client
+    void addLayer(const Serializer& args);    // Add new layer
+
+private:
+    QTcpSocket *socket;
 };
 //=============================================================================
 

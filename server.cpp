@@ -34,12 +34,16 @@ void Server::startServer()
 void Server::addLayer(const Serializer &args)
 {
     qDebug() << "Add layer called!";
+
+    // scene.add(layer);
+
+    //for (auto client: clients)
 }
 //_____________________________________________________________________________
 
 void Server::wrongRequest(const Serializer &args)
 {
-    qDebug() << "Wrong request recieved!";
+    qDebug() << "Wrong request recieved:" << args.getData();
 }
 //_____________________________________________________________________________
 // Slots
@@ -52,16 +56,19 @@ void Server::slotNewConnection()
     connect(socket, &QTcpSocket::readyRead, this, &Server::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected, this, &Server::slotDisconnected);
 
+    clients.push_back(QSharedPointer<Client>(new Client(socket)));
+
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
-    clients.push_back(socket);
-    clientsn.push_back(QSharedPointer<Client>(new Client(socket)));
+    clients.back()->initClient(JsonSerializer(InitClientArgs(clients.back()->getID())));
 }
 //_____________________________________________________________________________
 
 void Server::slotReadyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
+
+    curr_sender_id = socket->socketDescriptor();
 
     uint64_t header_size = 0;
 
@@ -71,7 +78,7 @@ void Server::slotReadyRead()
         Q_ASSERT(header_size > 0);
 
         QByteArray data = socket->read(header_size);
-        Q_ASSERT(data.size() == header_size);
+        Q_ASSERT(static_cast<uint64_t>(data.size()) == header_size);
 
         QJsonObject header = QJsonDocument::fromJson(data).object();
         int arg_size = header["argument_size"].toInt();
@@ -90,17 +97,24 @@ void Server::slotReadyRead()
         qDebug() << "| Client" << socket->socketDescriptor() << "called" << header["method"].toString();
         (this->*api_func[header["method"].toString()])(serial_arg);
     }
-
-    //for (auto client: clientsn)
-        //client->write("Common message");
 }
 //_____________________________________________________________________________
 void Server::slotDisconnected()
 
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
-    qDebug() << "| Client disconnected";
-    clients.removeOne(socket);
+
+    qDebug() << "| Client disconnected" << socket;
+
+    for (auto client = clients.begin(); client != clients.end(); ++client)
+    {
+        if (**client == Client(socket))
+        {
+            clients.erase(client);
+            break;
+        }
+    }
+
     socket->close();
 }
 //=============================================================================
