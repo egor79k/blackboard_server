@@ -27,6 +27,7 @@ void RequestHeader::deserialize(const QJsonObject& json)
     client_id = json["client_id"].toInt();
     method = json["method"].toString();
     argument_size = json["argument_size"].toInt();
+    Q_ASSERT(argument_size > 0);
 }
 //=============================================================================
 

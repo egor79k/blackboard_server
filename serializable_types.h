@@ -2,6 +2,7 @@
 #define SERIALIZABLE_TYPES_H
 
 #include <QJsonArray>
+#include <QMap>
 #include <QPair>
 #include <QString>
 
@@ -18,7 +19,6 @@ public:
     virtual void serialize(QJsonObject& json) const override;
     virtual void deserialize(const QJsonObject& json) override;
 
-private:
     int client_id;
     QString method;
     int argument_size;
@@ -54,7 +54,20 @@ public:
     virtual void serialize(QJsonObject& json) const override;
     virtual void deserialize(const QJsonObject& json) override;
 
+    void serializePencilArgs(QJsonObject& json){}
+    void deserializePencilArgs(const QJsonObject& json){}
+
 private:
+    struct SerialAdapter
+    {
+        void(AddLayerArgs::*serialize)(QJsonObject& json);
+        void(AddLayerArgs::*deserialize)(const QJsonObject& json);
+    };
+
+    QMap<QString, SerialAdapter> tools_serializers {
+        {"pencil", {&AddLayerArgs::serializePencilArgs, &AddLayerArgs::deserializePencilArgs}}
+    };
+
     Vec2i position;
     Vec2i size;
     QString tool;
