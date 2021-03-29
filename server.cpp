@@ -37,7 +37,9 @@ void Server::addLayer(const Serializer &args)
 
     // scene.add(layer);
 
-    //for (auto client: clients)
+    for (auto client: clients)
+        if (client->getID() != curr_sender_id)
+            client->addLayer(args);
 }
 //_____________________________________________________________________________
 

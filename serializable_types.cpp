@@ -91,4 +91,21 @@ void AddLayerArgs::deserialize(const QJsonObject& json)
 
     tool = json["tool"].toString();
 }
+//_____________________________________________________________________________
+
+void AddLayerArgs::serializePencilArgs(QJsonObject& json)
+{
+    QJsonArray points_arr = json["coordinates"].toArray();
+
+    PencilItem pencil_item;
+    for (auto point : points_arr)
+    {
+        QJsonArray pair = point.toArray();
+        pencil_item.addPoint(QPointF(pair[0].toInt(), pair[1].toInt()));
+    }
+}
+//_____________________________________________________________________________
+
+void AddLayerArgs::deserializePencilArgs(const QJsonObject& json)
+{}
 //=============================================================================

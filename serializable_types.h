@@ -6,6 +6,7 @@
 #include <QPair>
 #include <QString>
 
+#include "graphics_items.h"
 #include "serializers.h"
 
 
@@ -54,8 +55,8 @@ public:
     virtual void serialize(QJsonObject& json) const override;
     virtual void deserialize(const QJsonObject& json) override;
 
-    void serializePencilArgs(QJsonObject& json){}
-    void deserializePencilArgs(const QJsonObject& json){}
+    void serializePencilArgs(QJsonObject& json);
+    void deserializePencilArgs(const QJsonObject& json);
 
 private:
     struct SerialAdapter
