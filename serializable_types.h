@@ -17,8 +17,8 @@ public:
     RequestHeader();
     RequestHeader(int client_id_, const QString &method_, int argument_size_);
 
-    virtual void serialize(QJsonObject& json) const override;
-    virtual void deserialize(const QJsonObject& json) override;
+    bool serialize(QJsonObject& json) const override;
+    bool deserialize(const QJsonObject& json) override;
 
     int client_id;
     QString method;
@@ -34,8 +34,8 @@ public:
     InitClientArgs();
     InitClientArgs(int client_id_);
 
-    virtual void serialize(QJsonObject& json) const override;
-    virtual void deserialize(const QJsonObject& json) override;
+    bool serialize(QJsonObject& json) const override;
+    bool deserialize(const QJsonObject& json) override;
 
 private:
     int client_id;
@@ -52,16 +52,20 @@ public:
     AddLayerArgs();
     AddLayerArgs(const Vec2i &position_, const Vec2i &size_, QString tool_);
 
-    virtual void serialize(QJsonObject& json) const override;
-    virtual void deserialize(const QJsonObject& json) override;
+    ~AddLayerArgs();
 
-    void serializePencilArgs(QJsonObject& json);
-    void deserializePencilArgs(const QJsonObject& json);
+    bool serialize(QJsonObject& json) const override;
+    bool deserialize(const QJsonObject& json) override;
+
+    QGraphicsItem *takeLayerOwnership();
 
 private:
+    void serializePencilArgs(QJsonObject& json) const;
+    void deserializePencilArgs(const QJsonObject& json);
+
     struct SerialAdapter
     {
-        void(AddLayerArgs::*serialize)(QJsonObject& json);
+        void(AddLayerArgs::*serialize)(QJsonObject& json) const;
         void(AddLayerArgs::*deserialize)(const QJsonObject& json);
     };
 
@@ -72,6 +76,7 @@ private:
     Vec2i position;
     Vec2i size;
     QString tool;
+    QGraphicsItem *layer;
 };
 //=============================================================================
 

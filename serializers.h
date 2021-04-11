@@ -10,8 +10,13 @@
 //=============================================================================
 class Serializable {
 public:
-    virtual void serialize(QJsonObject& json) const = 0;
-    virtual void deserialize(const QJsonObject& json) = 0;
+    virtual bool serialize(QJsonObject& json) const = 0;
+    virtual bool deserialize(const QJsonObject& json) = 0;
+
+    virtual ~Serializable() = default;
+
+protected:
+    bool empty = true;
 };
 //=============================================================================
 
@@ -21,10 +26,14 @@ public:
 //=============================================================================
 class Serializer {
 public:
-    virtual void serialize(const Serializable& object) = 0;
-    virtual void deserialize(Serializable& object) const = 0;
+    virtual bool serialize(const Serializable& object) = 0;
+    virtual bool deserialize(Serializable& object) const = 0;
     virtual QByteArray getData() const = 0;
-    virtual void set(const QByteArray& data) = 0;
+    virtual bool set(const QByteArray& data) = 0;
+
+    virtual bool isNull() const = 0;
+
+    virtual ~Serializer() = default;
 };
 //=============================================================================
 
@@ -36,13 +45,15 @@ public:
     JsonSerializer(const QByteArray& data);
     JsonSerializer(const QJsonObject& json_doc);
 
-    virtual void serialize(const Serializable& object) override;
-    virtual void deserialize(Serializable& object) const override;
-    virtual QByteArray getData() const override;
-    virtual void set(const QByteArray& data) override;
+    bool serialize(const Serializable& object) override;
+    bool deserialize(Serializable& object) const override;
+    QByteArray getData() const override;
+    bool set(const QByteArray& data) override;
 
     QJsonDocument getJson() const;
-    void set(const QJsonObject& json_doc);
+    bool set(const QJsonObject& json_doc);
+
+    bool isNull() const override;
 
     QJsonParseError lastError() const;
 

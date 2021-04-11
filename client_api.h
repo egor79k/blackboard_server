@@ -21,6 +21,7 @@ public:
 
     id_type getID() const;
     QTcpSocket *getSocket() const;
+    void callMethod(const char *method, const Serializer &args);
 
 // Client API functions
 //----------------------

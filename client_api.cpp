@@ -26,10 +26,10 @@ QTcpSocket *Client::getSocket() const
 }
 //_____________________________________________________________________________
 
-void Client::initClient(const Serializer& args)
+void Client::callMethod(const char *method, const Serializer &args)
 {
     QByteArray json_args = args.getData();
-    QByteArray json_header = (JsonSerializer(RequestHeader(getID(), "init_client", json_args.size()))).getData();
+    QByteArray json_header = (JsonSerializer(RequestHeader(getID(), method, json_args.size()))).getData();
     uint64_t header_size = json_header.size();
     QByteArray request(reinterpret_cast<char *>(&header_size), sizeof(header_size));
     request.append(json_header);
@@ -38,8 +38,14 @@ void Client::initClient(const Serializer& args)
 }
 //_____________________________________________________________________________
 
-void Client::addLayer(const Serializer& args)
+void Client::initClient(const Serializer &args)
 {
+    callMethod("init_client", args);
+}
+//_____________________________________________________________________________
 
+void Client::addLayer(const Serializer &args)
+{
+    callMethod("c_add_layer", args);
 }
 //=============================================================================
