@@ -4,6 +4,11 @@
 //=============================================================================
 // RequestHeader
 //=============================================================================
+const char *RequestHeader::ClientID {"client_id"};
+const char *RequestHeader::Method {"method"};
+const char *RequestHeader::ArgsSize {"argument_size"};
+//_____________________________________________________________________________
+
 RequestHeader::RequestHeader()
 {}
 //_____________________________________________________________________________
@@ -12,7 +17,9 @@ RequestHeader::RequestHeader(int client_id_, const QString &method_, int argumen
     client_id(client_id_),
     method(method_),
     argument_size(argument_size_)
-{}
+{
+    empty = false;
+}
 //_____________________________________________________________________________
 
 bool RequestHeader::serialize(QJsonObject& json) const
@@ -42,13 +49,18 @@ bool RequestHeader::deserialize(const QJsonObject& json)
 //=============================================================================
 // InitClientArgs
 //=============================================================================
+const char *InitClientArgs::ClientID {"client_id"};
+//_____________________________________________________________________________
+
 InitClientArgs::InitClientArgs()
 {}
 //_____________________________________________________________________________
 
 InitClientArgs::InitClientArgs(int client_id_) :
     client_id(client_id_)
-{}
+{
+    empty = false;
+}
 //_____________________________________________________________________________
 
 bool InitClientArgs::serialize(QJsonObject& json) const
@@ -73,6 +85,12 @@ bool InitClientArgs::deserialize(const QJsonObject& json)
 //=============================================================================
 // AddLayerArgs
 //=============================================================================
+const char *AddLayerArgs::Position {"position"};
+const char *AddLayerArgs::Size {"size"};
+const char *AddLayerArgs::LayerType {"layer_type"};
+const char *AddLayerArgs::LayerData {"layer_data"};
+//_____________________________________________________________________________
+
 AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
@@ -81,7 +99,9 @@ AddLayerArgs::AddLayerArgs(const Vec2i &position_, const Vec2i &size_, QString t
     position(position_),
     size(size_),
     tool(tool_)
-{}
+{
+    empty = false;
+}
 //_____________________________________________________________________________
 
 AddLayerArgs::~AddLayerArgs()

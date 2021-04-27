@@ -33,19 +33,22 @@ void Server::startServer()
 
 void Server::addLayer(const Serializer &args)
 {
-    qDebug() << "Add layer called!";
+    qDebug() << "Add layer called with args:" << args.getData();
 
-    // scene.add(layer);
+    AddLayerArgs layer;
+    args.deserialize(layer);
 
     for (auto client: clients)
         if (client->getID() != curr_sender_id)
             client->addLayer(args);
+
+    //scene.addItem(layer.takeLayerOwnership());
 }
 //_____________________________________________________________________________
 
 void Server::wrongRequest(const Serializer &args)
 {
-    qDebug() << "Wrong request recieved:" << args.getData();
+    qDebug() << "Wrong request recieved with args:" << args.getData();
 }
 //_____________________________________________________________________________
 // Slots

@@ -20,6 +20,10 @@ public:
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
 
+    static const char *ClientID;
+    static const char *Method;
+    static const char *ArgsSize;
+
     int client_id;
     QString method;
     int argument_size;
@@ -36,6 +40,8 @@ public:
 
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
+
+    static const char *ClientID;
 
 private:
     int client_id;
@@ -58,6 +64,11 @@ public:
     bool deserialize(const QJsonObject& json) override;
 
     QGraphicsItem *takeLayerOwnership();
+
+    static const char *Position;
+    static const char *Size;
+    static const char *LayerType;
+    static const char *LayerData;
 
 private:
     void serializePencilArgs(QJsonObject& json) const;

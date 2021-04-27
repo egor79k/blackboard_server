@@ -3,6 +3,7 @@
 
 #define JSON_SERIALIZER
 
+#include <QGraphicsScene>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QList>
@@ -43,8 +44,7 @@ private:
 };
     QList<QSharedPointer<Client>> clients;
     Client::id_type curr_sender_id;
-    //QList<QTcpSocket *> clients;
-    //QList<Layer> layers_list;
+    //QGraphicsScene scene;
 };
 //=============================================================================
 
