@@ -4,11 +4,6 @@
 //=============================================================================
 // RequestHeader
 //=============================================================================
-const char *RequestHeader::ClientID {"client_id"};
-const char *RequestHeader::Method {"method"};
-const char *RequestHeader::ArgsSize {"argument_size"};
-//_____________________________________________________________________________
-
 RequestHeader::RequestHeader()
 {}
 //_____________________________________________________________________________
@@ -49,9 +44,6 @@ bool RequestHeader::deserialize(const QJsonObject& json)
 //=============================================================================
 // InitClientArgs
 //=============================================================================
-const char *InitClientArgs::ClientID {"client_id"};
-//_____________________________________________________________________________
-
 InitClientArgs::InitClientArgs()
 {}
 //_____________________________________________________________________________
@@ -85,12 +77,6 @@ bool InitClientArgs::deserialize(const QJsonObject& json)
 //=============================================================================
 // AddLayerArgs
 //=============================================================================
-const char *AddLayerArgs::Position {"position"};
-const char *AddLayerArgs::Size {"size"};
-const char *AddLayerArgs::LayerType {"layer_type"};
-const char *AddLayerArgs::LayerData {"layer_data"};
-//_____________________________________________________________________________
-
 AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
@@ -120,7 +106,8 @@ bool AddLayerArgs::serialize(QJsonObject& json) const
     json.insert("scale", scale);
     json.insert("layer_type", layer_type);
     QJsonObject layer_data;
-    (this->*tools_serializers[layer_type].serialize)(layer_data);
+    //(this->*tools_serializers[layer_type].serialize)(layer_data);
+    layer->serialize(layer_data);
     json.insert("layer_data", layer_data);
     return true;
 }
@@ -136,14 +123,15 @@ bool AddLayerArgs::deserialize(const QJsonObject& json)
 
     layer_type = json["layer_type"].toString();
 
-    (this->*tools_serializers[layer_type].deserialize)(json["layer_data"].toObject());
+    //(this->*tools_serializers[layer_type].deserialize)(json["layer_data"].toObject());
+    (this->*tool_deserialize[layer_type])(json["layer_data"].toObject());
 
     empty = false;
     return true;
 }
 //_____________________________________________________________________________
 
-QGraphicsItem *AddLayerArgs::takeLayerOwnership()
+Serializable *AddLayerArgs::takeLayerOwnership()
 {
     if (empty)
         return nullptr;
@@ -152,7 +140,7 @@ QGraphicsItem *AddLayerArgs::takeLayerOwnership()
     return layer;
 }
 //_____________________________________________________________________________
-
+/*
 void AddLayerArgs::serializePencilArgs(QJsonObject& json) const
 {
     QJsonArray points_arr;
@@ -174,7 +162,16 @@ void AddLayerArgs::deserializePencilArgs(const QJsonObject& json)
     for (auto point : points_arr)
     {
         QJsonArray pair = point.toArray();
-        pencil_item->addPoint(QPointF(pair[0].toInt(), pair[1].toInt()));
+        pencil_item->addPoint(QPointF(pair[0].toDouble(), pair[1].toDouble()));
     }
+}*/
+//_____________________________________________________________________________
+
+void AddLayerArgs::deserializeLineArgs(const QJsonObject& json)
+{
+
+    LineItem *line_item = new LineItem;
+    line_item->deserialize(json);
+    layer = line_item;
 }
 //=============================================================================

@@ -1,8 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#define JSON_SERIALIZER
-
 #include <QGraphicsScene>
 #include <QJsonDocument>
 #include <QJsonObject>

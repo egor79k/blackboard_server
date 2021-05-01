@@ -20,10 +20,6 @@ public:
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
 
-    static const char *ClientID;
-    static const char *Method;
-    static const char *ArgsSize;
-
     int client_id;
     QString method;
     int argument_size;
@@ -40,8 +36,6 @@ public:
 
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
-
-    static const char *ClientID;
 
 private:
     int client_id;
@@ -63,31 +57,29 @@ public:
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
 
-    QGraphicsItem *takeLayerOwnership();
-
-    static const char *Position;
-    static const char *Size;
-    static const char *LayerType;
-    static const char *LayerData;
+    Serializable *takeLayerOwnership();
 
 private:
-    void serializePencilArgs(QJsonObject& json) const;
-    void deserializePencilArgs(const QJsonObject& json);
+    //void serializePencilArgs(QJsonObject& json) const;
+    //void deserializePencilArgs(const QJsonObject& json);
 
+    void deserializeLineArgs(const QJsonObject& json);
+/*
     struct SerialAdapter
     {
         void(AddLayerArgs::*serialize)(QJsonObject& json) const;
         void(AddLayerArgs::*deserialize)(const QJsonObject& json);
     };
-
-    QMap<QString, SerialAdapter> tools_serializers {
-        {"pencil", {&AddLayerArgs::serializePencilArgs, &AddLayerArgs::deserializePencilArgs}}
+*/
+    QMap<QString, void(AddLayerArgs::*)(const QJsonObject& json)> tool_deserialize {
+        //{"pencil", {&AddLayerArgs::serializePencilArgs, &AddLayerArgs::deserializePencilArgs}}
+        {"line",  &AddLayerArgs::deserializeLineArgs}
     };
 
     Vec2i position;
     qreal scale;
     QString layer_type;
-    QGraphicsItem *layer;
+    Serializable *layer;
 };
 //=============================================================================
 

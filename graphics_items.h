@@ -2,9 +2,28 @@
 #define GRAPHICS_ITEMS_H
 
 #include <QGraphicsItem>
+#include <QJsonArray>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QVector>
+
+#include "serializers.h"
+
+//=============================================================================
+class LineItem : public QGraphicsLineItem, public Serializable
+{
+    using QGraphicsLineItem::QGraphicsLineItem;
+
+public:
+#ifdef JSON_SERIALIZER
+    virtual bool deserialize(const QJsonObject& json) override;
+    virtual bool serialize(QJsonObject& json) const override;
+#else
+    static_assert(false, "No serializer defined.");
+#endif
+};
+//=============================================================================
+
 
 //=============================================================================
 class PencilItem : public QGraphicsItem

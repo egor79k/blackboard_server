@@ -1,6 +1,8 @@
 #ifndef SERIALIZERS_H
 #define SERIALIZERS_H
 
+#define JSON_SERIALIZER
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QByteArray>
