@@ -95,10 +95,10 @@ AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
 
-AddLayerArgs::AddLayerArgs(const Vec2i &position_, const qreal &scale, QString tool_) :
+AddLayerArgs::AddLayerArgs(const Vec2i &position_, const qreal &scale_, QString layer_type_) :
     position(position_),
-    scale(scale),
-    layer_type(tool_)
+    scale(scale_),
+    layer_type(layer_type_)
 {
     empty = false;
 }
