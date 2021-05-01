@@ -95,10 +95,10 @@ AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
 
-AddLayerArgs::AddLayerArgs(const Vec2i &position_, const Vec2i &size_, QString tool_) :
+AddLayerArgs::AddLayerArgs(const Vec2i &position_, const qreal &scale_, QString layer_type_) :
     position(position_),
-    size(size_),
-    tool(tool_)
+    scale(scale_),
+    layer_type(layer_type_)
 {
     empty = false;
 }
@@ -117,11 +117,11 @@ bool AddLayerArgs::serialize(QJsonObject& json) const
         return false;
 
     json.insert("position", QJsonArray{position.first, position.second});
-    json.insert("size", QJsonArray{size.first, size.second});
-    json.insert("tool", tool);
-    QJsonObject parameters;
-    (this->*tools_serializers[tool].serialize)(parameters);
-    json.insert("parameters", parameters);
+    json.insert("scale", scale);
+    json.insert("layer_type", layer_type);
+    QJsonObject layer_data;
+    (this->*tools_serializers[layer_type].serialize)(layer_data);
+    json.insert("layer_data", layer_data);
     return true;
 }
 //_____________________________________________________________________________
@@ -132,13 +132,11 @@ bool AddLayerArgs::deserialize(const QJsonObject& json)
     position.first = pos_arr[0].toInt();
     position.second = pos_arr[1].toInt();
 
-    QJsonArray size_arr = json["size"].toArray();
-    size.first = size_arr[0].toInt();
-    size.second = size_arr[1].toInt();
+    scale = json["scale"].toDouble();
 
-    tool = json["tool"].toString();
+    layer_type = json["layer_type"].toString();
 
-    (this->*tools_serializers[tool].deserialize)(json["parameters"].toObject());
+    (this->*tools_serializers[layer_type].deserialize)(json["layer_data"].toObject());
 
     empty = false;
     return true;

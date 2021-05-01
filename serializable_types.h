@@ -56,7 +56,7 @@ public:
     typedef QPair<int, int> Vec2i;
 
     AddLayerArgs();
-    AddLayerArgs(const Vec2i &position_, const Vec2i &size_, QString tool_);
+    AddLayerArgs(const Vec2i &position_, const qreal &scale_, QString layer_type_);
 
     ~AddLayerArgs();
 
@@ -85,8 +85,8 @@ private:
     };
 
     Vec2i position;
-    Vec2i size;
-    QString tool;
+    qreal scale;
+    QString layer_type;
     QGraphicsItem *layer;
 };
 //=============================================================================
