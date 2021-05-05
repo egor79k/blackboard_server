@@ -17,8 +17,12 @@ public:
     RequestHeader();
     RequestHeader(int client_id_, const QString &method_, int argument_size_);
 
+#ifdef JSON_SERIALIZER
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
+#else
+static_assert(false, "No serializer defined.");
+#endif
 
     int client_id;
     QString method;
@@ -34,8 +38,12 @@ public:
     InitClientArgs();
     InitClientArgs(int client_id_);
 
+#ifdef JSON_SERIALIZER
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
+#else
+static_assert(false, "No serializer defined.");
+#endif
 
 private:
     int client_id;
@@ -50,36 +58,39 @@ public:
     typedef QPair<int, int> Vec2i;
 
     AddLayerArgs();
-    AddLayerArgs(const Vec2i &position_, const qreal &scale_, QString layer_type_);
+    AddLayerArgs(const QPointF &position_, const qreal &scale_, QString layer_type_);
 
     ~AddLayerArgs();
 
+    Serializable *takeLayerOwnership();
+
+#ifdef JSON_SERIALIZER
+public:
     bool serialize(QJsonObject& json) const override;
     bool deserialize(const QJsonObject& json) override;
 
-    Serializable *takeLayerOwnership();
+private:
+    template <typename T>
+    void deserializeLayerArgs(const QJsonObject& json);
+#else
+static_assert(false, "No serializer defined.");
+#endif
 
 private:
-    //void serializePencilArgs(QJsonObject& json) const;
-    //void deserializePencilArgs(const QJsonObject& json);
-
-    void deserializeLineArgs(const QJsonObject& json);
-/*
-    struct SerialAdapter
-    {
-        void(AddLayerArgs::*serialize)(QJsonObject& json) const;
-        void(AddLayerArgs::*deserialize)(const QJsonObject& json);
-    };
-*/
-    QMap<QString, void(AddLayerArgs::*)(const QJsonObject& json)> tool_deserialize {
+    QMap<QString, void(AddLayerArgs::*)(const QJsonObject& json)> layer_deserialize {
         //{"pencil", {&AddLayerArgs::serializePencilArgs, &AddLayerArgs::deserializePencilArgs}}
-        {"line",  &AddLayerArgs::deserializeLineArgs}
+        {"line",      &AddLayerArgs::deserializeLayerArgs<LineItem>},
+        {"pencil",    &AddLayerArgs::deserializeLayerArgs<PencilItem>},
+        {"rectangle", &AddLayerArgs::deserializeLayerArgs<RectangleItem>},
+        {"ellipse",   &AddLayerArgs::deserializeLayerArgs<EllipseItem>}
     };
 
-    Vec2i position;
+    Serializable *layer;
+
+public:
+    QPointF position;
     qreal scale;
     QString layer_type;
-    Serializable *layer;
 };
 //=============================================================================
 

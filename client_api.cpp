@@ -34,8 +34,9 @@ void Client::callMethod(const char *method, const Serializer &args)
     QByteArray request(reinterpret_cast<char *>(&header_size), sizeof(header_size));
     request.append(json_header);
     request.append(json_args);
-    qDebug() << "| callMethod" << method << "HEADER_SIZE =" << json_header.size() << "HEADER:" << json_header.chopped(json_header.size() - 10) << "ARGS" << json_args;
-    qDebug() << "| Full request SIZE =" << request.size() << "REQUEST:" << request;
+    //qDebug() << "| callMethod" << method << "HEADER_SIZE =" << json_header.size() << "HEADER:" << json_header.chopped(json_header.size() - 10) << "ARGS" << json_args;
+    //qDebug() << "| Full request SIZE =" << request.size() << "REQUEST:" << request;
+    qDebug() << "| Call client's method" << method;
     socket->write(request);
 }
 //_____________________________________________________________________________

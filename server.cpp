@@ -27,16 +27,16 @@ void Server::startServer()
         qDebug() << "Not listening";
     }
 }
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 // External API
 //_____________________________________________________________________________
 
 void Server::addLayer(const Serializer &args)
 {
-    qDebug() << "Add layer called with args:" << args.getData();
-
     AddLayerArgs layer;
     args.deserialize(layer);
+    
+    qDebug() << "| Add layer called of" << layer.layer_type << "type"; // with args:" << args.getData();
 
     for (auto client: clients)
         if (client->getID() != curr_sender_id)
@@ -48,9 +48,9 @@ void Server::addLayer(const Serializer &args)
 
 void Server::wrongRequest(const Serializer &args)
 {
-    qDebug() << "Wrong request recieved with args:" << args.getData();
+    qDebug().noquote() << "| Wrong request recieved with args:" << args.getData();
 }
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 // Slots
 //_____________________________________________________________________________
 
@@ -108,6 +108,7 @@ void Server::slotReadyRead()
     }
 }
 //_____________________________________________________________________________
+
 void Server::slotDisconnected()
 
 {
