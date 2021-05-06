@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QMap>
 #include <QPair>
+#include <QSharedPointer>
 #include <QString>
 
 #include "graphics_items.h"
@@ -58,11 +59,11 @@ public:
     typedef QPair<int, int> Vec2i;
 
     AddLayerArgs();
-    AddLayerArgs(const QPointF &position_, const qreal &scale_, QString layer_type_);
+    AddLayerArgs(QSharedPointer<Serializable> layer_, const QPointF &position_, const qreal &scale_, QString layer_type_);
 
     ~AddLayerArgs();
 
-    Serializable *takeLayerOwnership();
+    //Serializable *takeLayerOwnership();
 
 #ifdef JSON_SERIALIZER
 public:
@@ -85,9 +86,8 @@ private:
         {"ellipse",   &AddLayerArgs::deserializeLayerArgs<EllipseItem>}
     };
 
-    Serializable *layer;
-
 public:
+    QSharedPointer<Serializable> layer;
     QPointF position;
     qreal scale;
     QString layer_type;

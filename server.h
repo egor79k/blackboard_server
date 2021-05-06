@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <QGraphicsScene>
+#include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QList>
@@ -12,6 +13,7 @@
 #include <QTcpSocket>
 
 #include "client_api.h"
+#include "layer.h"
 #include "serializers.h"
 #include "serializable_types.h"
 
@@ -41,8 +43,8 @@ private:
         {"s_add_layer", &Server::addLayer}
 };
     QList<QSharedPointer<Client>> clients;
+    QList<QSharedPointer<Layer>> scene;
     Client::id_type curr_sender_id;
-    //QGraphicsScene scene;
 };
 //=============================================================================
 

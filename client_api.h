@@ -26,6 +26,7 @@ public:
 // Client API functions
 //----------------------
     void initClient(const Serializer& args);  // Send init info for new client
+    void finishBoardInit();                   // Called after adding all layers to new client
     void addLayer(const Serializer& args);    // Add new layer
 
 private:

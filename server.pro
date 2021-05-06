@@ -14,6 +14,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     client_api.cpp \
     graphics_items.cpp \
+    layer.cpp \
     serializable_types.cpp \
     serializers.cpp \
     server.cpp
@@ -32,6 +33,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 HEADERS += \
     client_api.h \
     graphics_items.h \
+    layer.h \
     serializable_types.h \
     serializers.h \
     server.h

@@ -1,5 +1,5 @@
-#include <QHostAddress>
 #include "server.h"
+
 
 //=============================================================================
 // Server
@@ -33,16 +33,17 @@ void Server::startServer()
 
 void Server::addLayer(const Serializer &args)
 {
-    AddLayerArgs layer;
-    args.deserialize(layer);
+    AddLayerArgs layer_data;
+    args.deserialize(layer_data);
     
-    qDebug() << "| Add layer called of" << layer.layer_type << "type"; // with args:" << args.getData();
+    qDebug() << "| Add layer called of" << layer_data.layer_type << "type"; // with args:" << args.getData();
+
+    scene.push_back(QSharedPointer<Layer> (new Layer(layer_data, curr_sender_id)));
 
     for (auto client: clients)
         if (client->getID() != curr_sender_id)
             client->addLayer(args);
 
-    //scene.addItem(layer.takeLayerOwnership());
 }
 //_____________________________________________________________________________
 
@@ -62,10 +63,18 @@ void Server::slotNewConnection()
     connect(socket, &QTcpSocket::disconnected, this, &Server::slotDisconnected);
 
     clients.push_back(QSharedPointer<Client>(new Client(socket)));
+    auto client = clients.back();
 
     qDebug() << "| Client " << socket->socketDescriptor() << " connected";
 
-    clients.back()->initClient(JsonSerializer(InitClientArgs(clients.back()->getID())));
+#ifdef JSON_SERIALIZER
+    client->initClient(JsonSerializer(InitClientArgs(clients.back()->getID())));
+
+    for (auto layer : scene)
+        client->addLayer(JsonSerializer(layer->getAddLayerArgs()));
+#else
+static_assert(false, "No serializer defined.");
+#endif
 }
 //_____________________________________________________________________________
 
@@ -90,7 +99,7 @@ void Server::slotReadyRead()
 #ifdef JSON_SERIALIZER
         JsonSerializer(data).deserialize(header);
 #else
-        Q_ASSERT(false && "JSON_SERIALIZER undefined");
+static_assert(false, "No serializer defined.");
 #endif
 
         data = socket->read(header.argument_size);
@@ -99,7 +108,7 @@ void Server::slotReadyRead()
 #ifdef JSON_SERIALIZER
         JsonSerializer serial_arg(data);
 #else
-        Q_ASSERT(false && "JSON_SERIALIZER undefined");
+static_assert(false, "No serializer defined.");
 #endif
 
         Q_ASSERT(api_func.contains(header.method));

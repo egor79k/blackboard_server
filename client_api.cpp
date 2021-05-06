@@ -47,6 +47,15 @@ void Client::initClient(const Serializer &args)
 }
 //_____________________________________________________________________________
 
+void Client::finishBoardInit()
+{
+#ifdef JSON_SERIALIZER
+    callMethod("c_finish_board_init", JsonSerializer(QJsonObject{}));
+#else
+static_assert(false, "No serializer defined.");
+#endif
+}
+
 void Client::addLayer(const Serializer &args)
 {
     callMethod("c_add_layer", args);

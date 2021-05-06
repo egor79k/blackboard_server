@@ -15,6 +15,8 @@ public:
     virtual bool serialize(QJsonObject& json) const = 0;
     virtual bool deserialize(const QJsonObject& json) = 0;
 
+    bool isNull() const { return empty; }
+
     virtual ~Serializable() = default;
 
 protected:

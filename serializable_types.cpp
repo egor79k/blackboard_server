@@ -89,7 +89,8 @@ AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
 
-AddLayerArgs::AddLayerArgs(const QPointF &position_, const qreal &scale_, QString layer_type_) :
+AddLayerArgs::AddLayerArgs(QSharedPointer<Serializable> layer_, const QPointF &position_, const qreal &scale_, QString layer_type_) :
+    layer(layer_),
     position(position_),
     scale(scale_),
     layer_type(layer_type_)
@@ -100,11 +101,11 @@ AddLayerArgs::AddLayerArgs(const QPointF &position_, const qreal &scale_, QStrin
 
 AddLayerArgs::~AddLayerArgs()
 {
-    if (!empty)
-        delete layer;
+    //if (!empty)
+        //delete layer;
 }
 //_____________________________________________________________________________
-
+/*
 Serializable *AddLayerArgs::takeLayerOwnership()
 {
     if (empty)
@@ -112,7 +113,7 @@ Serializable *AddLayerArgs::takeLayerOwnership()
 
     empty = true;
     return layer;
-}
+}*/
 //_____________________________________________________________________________
 
 #ifdef JSON_SERIALIZER
@@ -153,9 +154,12 @@ bool AddLayerArgs::deserialize(const QJsonObject& json)
 template <typename T>
 void AddLayerArgs::deserializeLayerArgs(const QJsonObject& json)
 {
+    layer = QSharedPointer<Serializable> (new T);
+    layer->deserialize(json);
+/*
     T *item = new T;
     item->deserialize(json);
-    layer = item;
+    layer = item;*/
 }
 #else
 static_assert(false, "No serializer defined.");
