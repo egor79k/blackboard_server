@@ -11,6 +11,13 @@
 #include "serializers.h"
 
 
+#ifdef JSON_SERIALIZER
+#define NO_ARGS_SERIALIZER JsonSerializer(QJsonObject{})
+#else
+static_assert(false, "No serializer defined.");
+#endif
+
+
 //=============================================================================
 class RequestHeader : public Serializable
 {

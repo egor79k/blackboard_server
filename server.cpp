@@ -53,6 +53,16 @@ static_assert(false, "No serializer defined.");
 }
 //_____________________________________________________________________________
 
+void Server::clearBoard()
+{
+    scene.clear();
+
+    for (auto client: clients)
+        if (client->getID() != curr_sender_id)
+            client->clearBoard();
+}
+//_____________________________________________________________________________
+
 void Server::wrongRequest(const Serializer &args)
 {
     qDebug().noquote() << "| Wrong request recieved with args:" << args.getData();

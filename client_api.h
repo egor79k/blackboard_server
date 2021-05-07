@@ -28,7 +28,8 @@ public:
     void initClient(const Serializer &args);  // Send init info for new client
     void finishBoardInit();                   // Called after adding all layers to new client
     void addLayer(const Serializer &args);    // Add new layer
-    void confirmAddLayer(const Serializer &args);
+    void confirmAddLayer(const Serializer &args); // Confirm successful adding and send new layer unique id
+    void clearBoard();                        // Delete all layers
 
 private:
     QTcpSocket *socket;

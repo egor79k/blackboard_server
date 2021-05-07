@@ -31,6 +31,7 @@ public:
 // Server API functions
 //----------------------
     void addLayer(const Serializer &args);      // Add new layer to layers_list
+    void clearBoard();
     void wrongRequest(const Serializer &args);  // Unknown request
 
 public slots:
