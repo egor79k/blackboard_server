@@ -75,6 +75,8 @@ void Server::slotNewConnection()
 #else
 static_assert(false, "No serializer defined.");
 #endif
+
+    client->finishBoardInit();
 }
 //_____________________________________________________________________________
 
