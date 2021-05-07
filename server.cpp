@@ -43,7 +43,10 @@ void Server::addLayer(const Serializer &args)
 
 #ifdef JSON_SERIALIZER
     for (auto client: clients)
-        client->addLayer(JsonSerializer(layer->getAddLayerArgs()));
+        if (client->getID() != curr_sender_id)
+            client->addLayer(JsonSerializer(layer->getAddLayerArgs()));
+        else
+            client->confirmAddLayer(JsonSerializer(ConfirmAddLayerArgs(layer->layer_id)));
 #else
 static_assert(false, "No serializer defined.");
 #endif

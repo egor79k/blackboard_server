@@ -55,9 +55,16 @@ void Client::finishBoardInit()
 static_assert(false, "No serializer defined.");
 #endif
 }
+//_____________________________________________________________________________
 
 void Client::addLayer(const Serializer &args)
 {
     callMethod("c_add_layer", args);
+}
+//_____________________________________________________________________________
+
+void Client::confirmAddLayer(const Serializer &args)
+{
+    callMethod("c_confirm_add_layer", args);
 }
 //=============================================================================

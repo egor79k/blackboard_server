@@ -168,3 +168,40 @@ void AddLayerArgs::deserializeLayerArgs(const QJsonObject& json)
 static_assert(false, "No serializer defined.");
 #endif
 //=============================================================================
+
+
+//=============================================================================
+// ConfirmAddLayerArgs
+//=============================================================================
+ConfirmAddLayerArgs::ConfirmAddLayerArgs()
+{}
+//_____________________________________________________________________________
+
+ConfirmAddLayerArgs::ConfirmAddLayerArgs(int layer_id_) :
+    layer_id(layer_id_)
+{
+    empty = false;
+}
+//_____________________________________________________________________________
+
+#ifdef JSON_SERIALIZER
+bool ConfirmAddLayerArgs::serialize(QJsonObject& json) const
+{
+    if (empty)
+        return false;
+    
+    json.insert("layer_id", layer_id);
+    return true;
+}
+//_____________________________________________________________________________
+
+bool ConfirmAddLayerArgs::deserialize(const QJsonObject& json)
+{
+    layer_id = json["layer_id"].toInt();
+    empty = false;
+    return true;
+}
+#else
+static_assert(false, "No serializer defined.");
+#endif
+//=============================================================================

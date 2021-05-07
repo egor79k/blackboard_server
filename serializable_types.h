@@ -95,4 +95,24 @@ public:
 };
 //=============================================================================
 
+
+//=============================================================================
+class ConfirmAddLayerArgs : public Serializable
+{
+public:
+    ConfirmAddLayerArgs();
+    ConfirmAddLayerArgs(int layer_id_);
+
+#ifdef JSON_SERIALIZER
+    bool serialize(QJsonObject& json) const override;
+    bool deserialize(const QJsonObject& json) override;
+#else
+static_assert(false, "No serializer defined.");
+#endif
+
+private:
+    int layer_id;
+};
+//=============================================================================
+
 #endif // SERIALIZABLE_TYPES_H
