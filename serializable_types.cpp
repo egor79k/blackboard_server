@@ -89,8 +89,9 @@ AddLayerArgs::AddLayerArgs()
 {}
 //_____________________________________________________________________________
 
-AddLayerArgs::AddLayerArgs(QSharedPointer<Serializable> layer_, const QPointF &position_, const qreal &scale_, QString layer_type_) :
+AddLayerArgs::AddLayerArgs(QSharedPointer<Serializable> layer_, const int layer_id_, const QPointF &position_, const qreal &scale_, QString layer_type_) :
     layer(layer_),
+    layer_id(layer_id_),
     position(position_),
     scale(scale_),
     layer_type(layer_type_)
@@ -122,6 +123,7 @@ bool AddLayerArgs::serialize(QJsonObject& json) const
     if (empty)
         return false;
 
+    json.insert("layer_id", layer_id);
     json.insert("position", QJsonArray{position.x(), position.y()});
     json.insert("scale", scale);
     json.insert("layer_type", layer_type);
@@ -135,6 +137,7 @@ bool AddLayerArgs::serialize(QJsonObject& json) const
 
 bool AddLayerArgs::deserialize(const QJsonObject& json)
 {
+    layer_id = json["layer_id"].toInt();
     QJsonArray pos_arr = json["position"].toArray();
     position.rx() = pos_arr[0].toDouble();
     position.ry() = pos_arr[1].toDouble();

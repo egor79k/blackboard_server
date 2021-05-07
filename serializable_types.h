@@ -59,7 +59,7 @@ public:
     typedef QPair<int, int> Vec2i;
 
     AddLayerArgs();
-    AddLayerArgs(QSharedPointer<Serializable> layer_, const QPointF &position_, const qreal &scale_, QString layer_type_);
+    AddLayerArgs(QSharedPointer<Serializable> layer_, const int layer_id_, const QPointF &position_, const qreal &scale_, QString layer_type_);
 
     ~AddLayerArgs();
 
@@ -88,6 +88,7 @@ private:
 
 public:
     QSharedPointer<Serializable> layer;
+    int layer_id;
     QPointF position;
     qreal scale;
     QString layer_type;

@@ -38,12 +38,15 @@ void Server::addLayer(const Serializer &args)
     
     qDebug() << "| Add layer called of" << layer_data.layer_type << "type"; // with args:" << args.getData();
 
-    scene.push_back(QSharedPointer<Layer> (new Layer(layer_data, curr_sender_id)));
+    QSharedPointer<Layer> layer (new Layer(layer_data, curr_sender_id));
+    scene.push_back(layer);
 
+#ifdef JSON_SERIALIZER
     for (auto client: clients)
-        if (client->getID() != curr_sender_id)
-            client->addLayer(args);
-
+        client->addLayer(JsonSerializer(layer->getAddLayerArgs()));
+#else
+static_assert(false, "No serializer defined.");
+#endif
 }
 //_____________________________________________________________________________
 
