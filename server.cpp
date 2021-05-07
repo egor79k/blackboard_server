@@ -53,7 +53,7 @@ static_assert(false, "No serializer defined.");
 }
 //_____________________________________________________________________________
 
-void Server::clearBoard()
+void Server::clearBoard(const Serializer &)
 {
     scene.clear();
 
@@ -63,9 +63,26 @@ void Server::clearBoard()
 }
 //_____________________________________________________________________________
 
-void Server::wrongRequest(const Serializer &args)
+void Server::deleteLayer(const Serializer &args)
 {
-    qDebug().noquote() << "| Wrong request recieved with args:" << args.getData();
+    DeleteLayerArgs layer_arg;
+    args.deserialize(layer_arg);
+/*
+    for (auto layer : scene)
+        if (layer->layer_id == layer_arg.layer_id)
+            scene.erase(layer);
+*/
+
+    for (auto layer = scene.begin(); layer != scene.end(); ++layer)
+        if ((*layer)->layer_id == layer_arg.layer_id)
+        {
+            scene.erase(layer);
+            break;
+        }
+
+    for (auto client: clients)
+        if (client->getID() != curr_sender_id)
+            client->deleteLayer(JsonSerializer(DeleteLayerArgs(layer_arg.layer_id)));
 }
 //-----------------------------------------------------------------------------
 // Slots

@@ -117,9 +117,10 @@ public:
 static_assert(false, "No serializer defined.");
 #endif
 
-private:
     int layer_id;
 };
 //=============================================================================
+
+using DeleteLayerArgs = ConfirmAddLayerArgs;
 
 #endif // SERIALIZABLE_TYPES_H

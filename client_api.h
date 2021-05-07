@@ -30,6 +30,7 @@ public:
     void addLayer(const Serializer &args);    // Add new layer
     void confirmAddLayer(const Serializer &args); // Confirm successful adding and send new layer unique id
     void clearBoard();                        // Delete all layers
+    void deleteLayer(const Serializer &args);
 
 private:
     QTcpSocket *socket;

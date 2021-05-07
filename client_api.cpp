@@ -69,4 +69,10 @@ void Client::clearBoard()
 {
     callMethod("c_clear_board", NO_ARGS_SERIALIZER);
 }
+//_____________________________________________________________________________
+
+void Client::deleteLayer(const Serializer &args)
+{
+    callMethod("c_delete_layer", args);
+}
 //=============================================================================

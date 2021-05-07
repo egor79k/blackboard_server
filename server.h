@@ -30,9 +30,9 @@ public:
 
 // Server API functions
 //----------------------
-    void addLayer(const Serializer &args);      // Add new layer to layers_list
-    void clearBoard();
-    void wrongRequest(const Serializer &args);  // Unknown request
+    void addLayer(const Serializer &args);     // Add new layer to layers_list
+    void clearBoard(const Serializer &args);   // Delete all layers
+    void deleteLayer(const Serializer &args);
 
 public slots:
     void slotNewConnection(); // New pending connection
@@ -41,7 +41,9 @@ public slots:
 
 private:
     QMap<QString, void(Server::*)(const Serializer &)> api_func = {
-        {"s_add_layer", &Server::addLayer}
+        {"s_add_layer",    &Server::addLayer},
+        {"s_clear_board",  &Server::clearBoard},
+        {"s_delete_layer", &Server::deleteLayer}
 };
     QList<QSharedPointer<Client>> clients;
     QList<QSharedPointer<Layer>> scene;
