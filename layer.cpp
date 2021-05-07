@@ -3,7 +3,7 @@
 //=============================================================================
 // Layer
 //=============================================================================
-Layer::Layer(AddLayerArgs layer_data, Client::id_type _creator_id) :
+Layer::Layer(const AddLayerArgs &layer_data, Client::id_type _creator_id) :
     layer(layer_data.layer),
     layer_id(next_free_layer_id),
     position(layer_data.position),

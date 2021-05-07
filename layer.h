@@ -8,7 +8,7 @@
 class Layer
 {
 public:
-    Layer(AddLayerArgs layer_data, Client::id_type _creator_id);
+    Layer(const AddLayerArgs &layer_data, Client::id_type _creator_id);
 
     AddLayerArgs getAddLayerArgs() const;
 

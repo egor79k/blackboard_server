@@ -209,7 +209,7 @@ bool RectangleItem::serialize(QJsonObject& json) const
     json = QJsonObject();
 
     QRectF cur_rect = rect();
-    if (cur_rect.isValid()) {
+    if (!cur_rect.isValid()) {
         return false;
     }
 
@@ -251,7 +251,7 @@ bool EllipseItem::serialize(QJsonObject& json) const
     json = QJsonObject();
 
     QRectF cur_rect = rect();
-    if (cur_rect.isValid()) {
+    if (!cur_rect.isValid()) {
         return false;
     }
 
