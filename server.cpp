@@ -67,15 +67,11 @@ void Server::deleteLayer(const Serializer &args)
 {
     DeleteLayerArgs layer_arg;
     args.deserialize(layer_arg);
-/*
-    for (auto layer : scene)
-        if (layer->layer_id == layer_arg.layer_id)
-            scene.erase(layer);
-*/
 
     for (auto layer = scene.begin(); layer != scene.end(); ++layer)
         if ((*layer)->layer_id == layer_arg.layer_id)
         {
+            saveHistory(*layer);
             scene.erase(layer);
             break;
         }
@@ -83,6 +79,20 @@ void Server::deleteLayer(const Serializer &args)
     for (auto client: clients)
         if (client->getID() != curr_sender_id)
             client->deleteLayer(JsonSerializer(DeleteLayerArgs(layer_arg.layer_id)));
+}
+//_____________________________________________________________________________
+
+void undo(const Serializer &)
+{
+
+}
+//_____________________________________________________________________________
+
+void Server::saveHistory(QSharedPointer<Layer> layer)
+{
+    QSharedPointer<QJsonObject> saved_layer(new QJsonObject);
+    layer->getAddLayerArgs().serialize(*saved_layer);
+    history.push(saved_layer);
 }
 //-----------------------------------------------------------------------------
 // Slots

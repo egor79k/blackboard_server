@@ -32,6 +32,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     client_api.h \
+    cyclic_stack.h \
     graphics_items.h \
     layer.h \
     serializable_types.h \

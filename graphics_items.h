@@ -12,9 +12,13 @@
 //=============================================================================
 class LineItem : public QGraphicsLineItem, public Serializable
 {
-    using QGraphicsLineItem::QGraphicsLineItem;
-
 public:
+    template<typename ...Args>
+    LineItem(Args... args)
+        : QGraphicsLineItem(std::forward<Args>(args)...) {
+        setPen(QPen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap));
+    }
+
 #ifdef JSON_SERIALIZER
     virtual bool deserialize(const QJsonObject& json) override;
     virtual bool serialize(QJsonObject& json) const override;
@@ -28,14 +32,15 @@ public:
 //=============================================================================
 class PencilItem : public QGraphicsPathItem, public Serializable
 {
-    using QGraphicsPathItem::QGraphicsPathItem;
-
 public:
+    PencilItem() = default;
     PencilItem(const QPolygonF& vertices);
     PencilItem(const QPolygonF&& vertices);
 
     void setVertices(const QPolygonF& vertices);
     void setVertices(const QPolygonF&& vertices);
+    void addVertex(const QPointF& vertex);
+    void translateVertices(const QPointF& offset);
 
 #ifdef JSON_SERIALIZER
     virtual bool deserialize(const QJsonObject& json) override;
@@ -49,29 +54,19 @@ private:
 
     QPolygonF vertices;
 };
-
-/*
-class PencilItem : public QGraphicsItem
-{
-public:
-    void addPoint(const QPointF &point);
-    const QVector<QPointF> &getPoints();
-
-    virtual QRectF boundingRect() const override;
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
-
-private:
-    QVector<QPointF> points;
-};*/
 //=============================================================================
 
 
 //=============================================================================
 class RectangleItem : public QGraphicsRectItem, public Serializable
 {
-    using QGraphicsRectItem::QGraphicsRectItem;
-
 public:
+    template<typename ...Args>
+    RectangleItem(Args... args)
+        : QGraphicsRectItem(std::forward<Args>(args)...) {
+        setPen(QPen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap));
+    }
+
 #ifdef JSON_SERIALIZER
     virtual bool deserialize(const QJsonObject& json) override;
     virtual bool serialize(QJsonObject& json) const override;
@@ -85,9 +80,13 @@ public:
 //=============================================================================
 class EllipseItem : public QGraphicsEllipseItem, public Serializable
 {
-    using QGraphicsEllipseItem::QGraphicsEllipseItem;
-
 public:
+    template<typename ...Args>
+    EllipseItem(Args... args)
+        : QGraphicsEllipseItem(std::forward<Args>(args)...) {
+        setPen(QPen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap));
+    }
+
 #ifdef JSON_SERIALIZER
     virtual bool deserialize(const QJsonObject& json) override;
     virtual bool serialize(QJsonObject& json) const override;

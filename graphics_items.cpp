@@ -11,6 +11,7 @@ bool LineItem::deserialize(const QJsonObject& json)
 
     QLineF new_line;
 
+    // points
     QJsonValue cur_value = json.value("first_point");
     if (!cur_value.isArray()) {
         return false;
@@ -33,6 +34,32 @@ bool LineItem::deserialize(const QJsonObject& json)
     }
     new_line.setP2(QPointF(x.toDouble(), y.toDouble()));
 
+    QPen new_pen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap);
+
+    // color
+    cur_value = json.value("color");
+    if (!cur_value.isArray()) {
+        return false;
+    }
+    QJsonValue r = cur_value.toArray().at(0);
+    QJsonValue g = cur_value.toArray().at(1);
+    QJsonValue b = cur_value.toArray().at(2);
+    QJsonValue a = cur_value.toArray().at(3);
+    if (!a.isDouble() || !r.isDouble() ||
+        !g.isDouble() || !b.isDouble()) {
+        return false;
+    }
+    new_pen.setColor(QColor(r.toInt(), g.toInt(),
+                            b.toInt(), a.toInt()));
+
+    // width
+    cur_value = json.value("width");
+    if (!cur_value.isDouble()) {
+        return false;
+    }
+    new_pen.setWidthF(cur_value.toDouble());
+
+    setPen(new_pen);
     setLine(new_line);
 
     return true;
@@ -51,6 +78,16 @@ bool LineItem::serialize(QJsonObject& json) const
     json.insert("first_point", QJsonArray{ cur_line.p1().x(), cur_line.p1().y() });
     json.insert("second_point", QJsonArray{ cur_line.p2().x(), cur_line.p2().y() });
 
+    QColor color = pen().color();
+    json.insert("color", QJsonArray{
+            color.alpha(),
+            color.red(),
+            color.green(),
+            color.blue()
+        });
+
+    json.insert("width", pen().widthF());
+
     return true;
 }
 #else
@@ -64,12 +101,14 @@ static_assert(false, "No serializer defined.");
 //=============================================================================
 PencilItem::PencilItem(const QPolygonF& vertices) : vertices(vertices)
 {
+    setPen(QPen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap));
     verticesToPath();
 }
 //_____________________________________________________________________________
 
 PencilItem::PencilItem(const QPolygonF&& vertices) : vertices(vertices)
 {
+    setPen(QPen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap));
     verticesToPath();
 }
 //_____________________________________________________________________________
@@ -87,21 +126,34 @@ void PencilItem::setVertices(const QPolygonF&& vertices)
 }
 //_____________________________________________________________________________
 
+void PencilItem::addVertex(const QPointF& vertex)
+{
+    vertices.append(vertex);
+    verticesToPath();
+}
+//_____________________________________________________________________________
+
+void PencilItem::translateVertices(const QPointF& offset)
+{
+    vertices.translate(offset);
+    verticesToPath();
+}
+//_____________________________________________________________________________
+
 #ifdef JSON_SERIALIZER
 bool PencilItem::deserialize(const QJsonObject& json)
 {
     Q_ASSERT(!json.isEmpty());
 
-    QPolygonF new_vertices;
-
-    QJsonValue json_vertices = json.value("coordinates");
-    if (!json_vertices.isArray()) {
+    // vertices
+    QJsonValue cur_value = json.value("coordinates");
+    if (!cur_value.isArray()) {
         return false;
     }
+    QPolygonF new_vertices;
+    new_vertices.reserve(cur_value.toArray().size());
 
-    new_vertices.reserve(json_vertices.toArray().size());
-
-    for (const QJsonValue& vertex : json_vertices.toArray()) {
+    for (const QJsonValue& vertex : cur_value.toArray()) {
         if (!vertex.isArray()) {
             return false;
         }
@@ -115,6 +167,32 @@ bool PencilItem::deserialize(const QJsonObject& json)
         new_vertices.append(QPointF(x.toDouble(), y.toDouble()));
     }
 
+    QPen new_pen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap);
+
+    // color
+    cur_value = json.value("color");
+    if (!cur_value.isArray()) {
+        return false;
+    }
+    QJsonValue r = cur_value.toArray().at(0);
+    QJsonValue g = cur_value.toArray().at(1);
+    QJsonValue b = cur_value.toArray().at(2);
+    QJsonValue a = cur_value.toArray().at(3);
+    if (!a.isDouble() || !r.isDouble() ||
+        !g.isDouble() || !b.isDouble()) {
+        return false;
+    }
+    new_pen.setColor(QColor(r.toInt(), g.toInt(),
+                            b.toInt(), a.toInt()));
+
+    // width
+    cur_value = json.value("width");
+    if (!cur_value.isDouble()) {
+        return false;
+    }
+    new_pen.setWidthF(cur_value.toDouble());
+
+    setPen(new_pen);
     vertices = new_vertices;
     verticesToPath();
 
@@ -152,35 +230,6 @@ void PencilItem::verticesToPath()
 //=============================================================================
 
 
-/*
-//=============================================================================
-// PencilItem
-//=============================================================================
-void PencilItem::addPoint(const QPointF &point)
-{
-    points.push_back(point);
-}
-//_____________________________________________________________________________
-
-const QVector<QPointF> &PencilItem::getPoints()
-{
-	return points;
-}
-//_____________________________________________________________________________
-
-QRectF PencilItem::boundingRect() const
-{
-    return QRectF{};
-}
-//_____________________________________________________________________________
-
-void PencilItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    painter->drawLines(points);
-}
-//=============================================================================
-*/
-
 //=============================================================================
 // RectangleItem
 //=============================================================================
@@ -189,15 +238,43 @@ bool RectangleItem::deserialize(const QJsonObject& json)
 {
     Q_ASSERT(!json.isEmpty());
 
-    QJsonValue size = json.value("size");
-    if (!size.isArray()) {
+    // size
+    QJsonValue cur_value = json.value("size");
+    if (!cur_value.isArray()) {
         return false;
     }
-    QJsonValue width = size.toArray().at(0);
-    QJsonValue height = size.toArray().at(1);
+    QJsonValue width = cur_value.toArray().at(0);
+    QJsonValue height = cur_value.toArray().at(1);
     if (!width.isDouble() || !height.isDouble()) {
         return false;
     }
+
+    QPen new_pen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap);
+
+    // color
+    cur_value = json.value("color");
+    if (!cur_value.isArray()) {
+        return false;
+    }
+    QJsonValue r = cur_value.toArray().at(0);
+    QJsonValue g = cur_value.toArray().at(1);
+    QJsonValue b = cur_value.toArray().at(2);
+    QJsonValue a = cur_value.toArray().at(3);
+    if (!a.isDouble() || !r.isDouble() ||
+        !g.isDouble() || !b.isDouble()) {
+        return false;
+    }
+    new_pen.setColor(QColor(r.toInt(), g.toInt(),
+                            b.toInt(), a.toInt()));
+
+    // width
+    cur_value = json.value("width");
+    if (!cur_value.isDouble()) {
+        return false;
+    }
+    new_pen.setWidthF(cur_value.toDouble());
+
+    setPen(new_pen);
     setRect(0, 0, width.toDouble(), height.toDouble());
 
     return true;
@@ -215,6 +292,16 @@ bool RectangleItem::serialize(QJsonObject& json) const
 
     json.insert("size", QJsonArray{ cur_rect.width(), cur_rect.height() });
 
+    QColor color = pen().color();
+    json.insert("color", QJsonArray{
+            color.alpha(),
+            color.red(),
+            color.green(),
+            color.blue()
+        });
+
+    json.insert("width", pen().widthF());
+
     return true;
 }
 #else
@@ -231,15 +318,43 @@ bool EllipseItem::deserialize(const QJsonObject& json)
 {
     Q_ASSERT(!json.isEmpty());
 
-    QJsonValue size = json.value("size");
-    if (!size.isArray()) {
+    // size
+    QJsonValue cur_value = json.value("size");
+    if (!cur_value.isArray()) {
         return false;
     }
-    QJsonValue width = size.toArray().at(0);
-    QJsonValue height = size.toArray().at(1);
+    QJsonValue width = cur_value.toArray().at(0);
+    QJsonValue height = cur_value.toArray().at(1);
     if (!width.isDouble() || !height.isDouble()) {
         return false;
     }
+
+    QPen new_pen(QBrush(), 1, Qt::SolidLine, Qt::RoundCap);
+
+    // color
+    cur_value = json.value("color");
+    if (!cur_value.isArray()) {
+        return false;
+    }
+    QJsonValue r = cur_value.toArray().at(0);
+    QJsonValue g = cur_value.toArray().at(1);
+    QJsonValue b = cur_value.toArray().at(2);
+    QJsonValue a = cur_value.toArray().at(3);
+    if (!a.isDouble() || !r.isDouble() ||
+        !g.isDouble() || !b.isDouble()) {
+        return false;
+    }
+    new_pen.setColor(QColor(r.toInt(), g.toInt(),
+                            b.toInt(), a.toInt()));
+
+    // width
+    cur_value = json.value("width");
+    if (!cur_value.isDouble()) {
+        return false;
+    }
+    new_pen.setWidthF(cur_value.toDouble());
+
+    setPen(new_pen);
     setRect(0, 0, width.toDouble(), height.toDouble());
 
     return true;
@@ -256,6 +371,16 @@ bool EllipseItem::serialize(QJsonObject& json) const
     }
 
     json.insert("size", QJsonArray{ cur_rect.width(), cur_rect.height() });
+
+    QColor color = pen().color();
+    json.insert("color", QJsonArray{
+            color.alpha(),
+            color.red(),
+            color.green(),
+            color.blue()
+        });
+
+    json.insert("width", pen().widthF());
 
     return true;
 }
