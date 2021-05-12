@@ -36,7 +36,7 @@ public:
     void deleteLayer(const Serializer &args);
     void undo(const Serializer &args);         // Cancel last changes
 
-    void saveHistory(QSharedPointer<Layer> layer);
+    void saveHistory(QSharedPointer<Layer> layer, Client::HSCT change_type);
 
 public slots:
     void slotNewConnection(); // New pending connection
@@ -52,7 +52,7 @@ private:
     QList<QSharedPointer<Client>> clients;
     QList<QSharedPointer<Layer>> scene;
     Client::id_type curr_sender_id;
-    CyclicStack<QSharedPointer<QJsonObject>, 16> history;
+    //CyclicStack<QSharedPointer<QJsonObject>, 16> history;
 };
 //=============================================================================
 

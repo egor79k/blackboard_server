@@ -41,6 +41,8 @@ void Server::addLayer(const Serializer &args)
     QSharedPointer<Layer> layer (new Layer(layer_data, curr_sender_id));
     scene.push_back(layer);
 
+    saveHistory(layer, Client::HSCT::ADD_LAYER);
+
 #ifdef JSON_SERIALIZER
     for (auto client: clients)
         if (client->getID() != curr_sender_id)
@@ -71,7 +73,7 @@ void Server::deleteLayer(const Serializer &args)
     for (auto layer = scene.begin(); layer != scene.end(); ++layer)
         if ((*layer)->layer_id == layer_arg.layer_id)
         {
-            saveHistory(*layer);
+            saveHistory(*layer, Client::HSCT::DELETE_LAYER);
             scene.erase(layer);
             break;
         }
@@ -82,17 +84,82 @@ void Server::deleteLayer(const Serializer &args)
 }
 //_____________________________________________________________________________
 
-void undo(const Serializer &)
+void Server::undo(const Serializer &)
 {
+    QSharedPointer<Client::HistorySlot> slot{};
 
+    for (auto client: clients)
+        if (client->getID() == curr_sender_id)
+        {
+            QSharedPointer<Client::HistorySlot> slot = client->rollBackHistory();
+            break;
+        }
+
+    switch (slot->change_type)
+    {
+        case Client::HSCT::ADD_LAYER:
+        {
+            AddLayerArgs layer_data;
+            JsonSerializer(slot->layer).deserialize(layer_data);
+
+            for (auto layer = scene.begin(); layer != scene.end(); ++layer)
+                if ((*layer)->layer_id == layer_data.layer_id)
+                {
+                    scene.erase(layer);
+                    break;
+                }
+
+        #ifdef JSON_SERIALIZER
+            for (auto client: clients)
+                client->deleteLayer(JsonSerializer(DeleteLayerArgs(layer_data.layer_id)));
+        #else
+        static_assert(false, "No serializer defined.");
+        #endif
+
+            break;
+        }
+
+        case Client::HSCT::CHANGE_LAYER:
+            break;
+
+        case Client::HSCT::DELETE_LAYER:
+        {
+            AddLayerArgs layer_data;
+            JsonSerializer(slot->layer).deserialize(layer_data);
+
+            QSharedPointer<Layer> layer (new Layer(layer_data, curr_sender_id));
+            scene.push_back(layer);
+
+        #ifdef JSON_SERIALIZER
+            for (auto client: clients)
+                    client->addLayer(JsonSerializer(layer->getAddLayerArgs()));
+        #else
+        static_assert(false, "No serializer defined.");
+        #endif
+
+            break;
+        }
+    }
 }
 //_____________________________________________________________________________
 
-void Server::saveHistory(QSharedPointer<Layer> layer)
+void Server::saveHistory(QSharedPointer<Layer> layer, Client::HSCT change_type)
 {
+    QSharedPointer<Client::HistorySlot> slot(new Client::HistorySlot);
+    layer->getAddLayerArgs().serialize(slot->layer);
+    slot->change_type = change_type;
+
+    for (auto client: clients)
+        if (client->getID() == curr_sender_id)
+        {
+            client->saveHistory(slot);
+            break;
+        }
+
+/*
     QSharedPointer<QJsonObject> saved_layer(new QJsonObject);
     layer->getAddLayerArgs().serialize(*saved_layer);
-    history.push(saved_layer);
+    history.push(saved_layer);*/
 }
 //-----------------------------------------------------------------------------
 // Slots

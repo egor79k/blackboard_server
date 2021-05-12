@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 
+#include "cyclic_stack.h"
 #include "serializers.h"
 #include "serializable_types.h"
 
@@ -13,6 +14,21 @@ class Client : public QObject
     Q_OBJECT
 
 public:
+    struct HistorySlot
+    {
+        enum ChangeType
+        {
+            ADD_LAYER,
+            CHANGE_LAYER,
+            DELETE_LAYER
+        };
+
+        QJsonObject layer;
+        ChangeType change_type;
+    };
+
+    using HSCT = HistorySlot::ChangeType;
+
     typedef int id_type;
 
     Client(QTcpSocket *socket_);
@@ -22,6 +38,9 @@ public:
     id_type getID() const;
     QTcpSocket *getSocket() const;
     void callMethod(const char *method, const Serializer &args);
+
+    void saveHistory(QSharedPointer<HistorySlot> slot);
+    QSharedPointer<HistorySlot> rollBackHistory();
 
 // Client API functions
 //----------------------
@@ -34,6 +53,7 @@ public:
 
 private:
     QTcpSocket *socket;
+    CyclicStack<QSharedPointer<HistorySlot>, 8> history;
 };
 //=============================================================================
 

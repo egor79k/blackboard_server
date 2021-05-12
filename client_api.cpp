@@ -41,6 +41,18 @@ void Client::callMethod(const char *method, const Serializer &args)
 }
 //_____________________________________________________________________________
 
+void Client::saveHistory(QSharedPointer<HistorySlot> slot)
+{
+    history.push(slot);
+}
+//_____________________________________________________________________________
+
+QSharedPointer<Client::HistorySlot> Client::rollBackHistory()
+{
+    return history.pop();
+}
+//_____________________________________________________________________________
+
 void Client::initClient(const Serializer &args)
 {
     callMethod("init_client", args);
