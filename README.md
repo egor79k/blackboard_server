@@ -14,7 +14,7 @@ Server for online board for working with [clients](https://github.com/MaxMalts/O
 
 API description
 ---------------
-Server API includes next methods with corresponding arguments:
+### Server API includes next methods with corresponding arguments:
 - ***s_add_layer***
 ```
 {
@@ -36,7 +36,7 @@ Server API includes next methods with corresponding arguments:
 - ***s_undo***  
 `No arguments`
 
-Client API includes next methods:
+### Client API includes next methods with corresponding arguments:
 - ***c_init_client***
 ```
 {
@@ -70,6 +70,8 @@ Client API includes next methods:
 }
 ```
 
+Server-client communication schemes
+-----------------------------------
 ### Connecting
 When new client is connected, server calls *c_init_client()* to give new cliet it's id and confirm successful connection. After that each layer on board must be added on client's canvas. At the end of inicialization client notified about completing all init operations with call *c_finish_board_init()*.
 ![Connecting new client scheme](https://github.com/egor79k/blackboard_server/blob/master/img/connecting.png)
