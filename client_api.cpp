@@ -44,6 +44,7 @@ void Client::callMethod(const char *method, const Serializer &args)
 void Client::saveHistory(QSharedPointer<HistorySlot> slot)
 {
     history.push(slot);
+    //qDebug().noquote() << "|Client" << getID() << "saved history:\n" << JsonSerializer(slot->layer).getData();
 }
 //_____________________________________________________________________________
 

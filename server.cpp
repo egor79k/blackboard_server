@@ -91,7 +91,7 @@ void Server::undo(const Serializer &)
     for (auto client: clients)
         if (client->getID() == curr_sender_id)
         {
-            QSharedPointer<Client::HistorySlot> slot = client->rollBackHistory();
+            slot = client->rollBackHistory();
             break;
         }
 
