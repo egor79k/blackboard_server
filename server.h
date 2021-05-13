@@ -47,12 +47,12 @@ private:
     QMap<QString, void(Server::*)(const Serializer &)> api_func = {
         {"s_add_layer",    &Server::addLayer},
         {"s_clear_board",  &Server::clearBoard},
-        {"s_delete_layer", &Server::deleteLayer}
+        {"s_delete_layer", &Server::deleteLayer},
+        {"s_undo",         &Server::undo}
 };
     QList<QSharedPointer<Client>> clients;
     QList<QSharedPointer<Layer>> scene;
     Client::id_type curr_sender_id;
-    //CyclicStack<QSharedPointer<QJsonObject>, 16> history;
 };
 //=============================================================================
 
