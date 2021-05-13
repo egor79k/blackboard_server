@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 #include <QJsonArray>
 #include <QPainter>
+#include <QPen>
 #include <QStyleOptionGraphicsItem>
 #include <QVector>
 
@@ -50,6 +51,7 @@ public:
 #endif
 
 private:
+    QPen defaultPen();
     void verticesToPath();
 
     QPolygonF vertices;

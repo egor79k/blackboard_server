@@ -36,7 +36,7 @@ void Client::callMethod(const char *method, const Serializer &args)
     request.append(json_args);
     //qDebug() << "| callMethod" << method << "HEADER_SIZE =" << json_header.size() << "HEADER:" << json_header.chopped(json_header.size() - 10) << "ARGS" << json_args;
     //qDebug() << "| Full request SIZE =" << request.size() << "REQUEST:" << request;
-    qDebug() << "| Call client's method" << method;
+    qDebug() << "| Call client's" << getID() << "method" << method;
     socket->write(request);
 }
 //_____________________________________________________________________________
