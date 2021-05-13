@@ -53,7 +53,7 @@ public:
 
 private:
     QTcpSocket *socket;
-    CyclicStack<QSharedPointer<HistorySlot>, 8> history;
+    CyclicStack<QSharedPointer<HistorySlot>, 16> history;
 };
 //=============================================================================
 
