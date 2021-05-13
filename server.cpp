@@ -95,6 +95,9 @@ void Server::undo(const Serializer &)
             break;
         }
 
+    if (slot.isNull())
+        return;
+
     switch (slot->change_type)
     {
         case Client::HSCT::ADD_LAYER:

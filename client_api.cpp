@@ -50,7 +50,9 @@ void Client::saveHistory(QSharedPointer<HistorySlot> slot)
 
 QSharedPointer<Client::HistorySlot> Client::rollBackHistory()
 {
-    return history.pop();
+    if (!history.isEmpty())
+        return history.pop();
+    return QSharedPointer<Client::HistorySlot> (nullptr);
 }
 //_____________________________________________________________________________
 

@@ -35,6 +35,11 @@ public:
         return T{};
     }
 
+    bool isEmpty()
+    {
+        return (size == 0);
+    }
+
 private:
     T data[N] = {};
     int head = 0;
