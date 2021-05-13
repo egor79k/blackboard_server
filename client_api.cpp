@@ -55,7 +55,7 @@ QSharedPointer<Client::HistorySlot> Client::rollBackHistory()
 
 void Client::initClient(const Serializer &args)
 {
-    callMethod("init_client", args);
+    callMethod("c_init_client", args);
 }
 //_____________________________________________________________________________
 
