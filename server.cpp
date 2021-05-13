@@ -20,11 +20,11 @@ void Server::startServer()
 {
     if (this->listen(QHostAddress::Any, 5555))
     {
-        qDebug() << "Listening";
+        qDebug() << "| Listening";
     }
     else
     {
-        qDebug() << "Not listening";
+        qDebug() << "| Not listening";
     }
 }
 //-----------------------------------------------------------------------------
