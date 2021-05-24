@@ -35,6 +35,12 @@ public:
         return T{};
     }
 
+    void clear()
+    {
+        size = 0;
+        head = 0;
+    }
+
     bool isEmpty()
     {
         return (size == 0);

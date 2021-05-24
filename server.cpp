@@ -61,9 +61,11 @@ void Server::clearBoard(const Serializer &)
 {
     scene.clear();
 
-    for (auto client: clients)
+    for (auto client: clients) {
+        client->clearHistory();
         if (client->getID() != curr_sender_id)
             client->clearBoard();
+    }
 }
 //_____________________________________________________________________________
 

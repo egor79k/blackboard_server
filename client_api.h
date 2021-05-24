@@ -41,6 +41,7 @@ public:
 
     void saveHistory(QSharedPointer<HistorySlot> slot);
     QSharedPointer<HistorySlot> rollBackHistory();
+    void clearHistory();
 
 // Client API functions
 //----------------------
