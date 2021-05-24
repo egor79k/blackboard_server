@@ -15,6 +15,7 @@ SOURCES += main.cpp \
     client_api.cpp \
     graphics_items.cpp \
     layer.cpp \
+    packagereadmanager.cpp \
     serializable_types.cpp \
     serializers.cpp \
     server.cpp
@@ -35,6 +36,7 @@ HEADERS += \
     cyclic_stack.h \
     graphics_items.h \
     layer.h \
+    packagereadmanager.h \
     serializable_types.h \
     serializers.h \
     server.h
