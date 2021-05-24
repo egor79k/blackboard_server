@@ -171,9 +171,10 @@ void Server::saveHistory(QSharedPointer<Layer> layer, Client::HSCT change_type)
 void Server::slotNewConnection()
 {
     QTcpSocket *socket = this->nextPendingConnection();
-
-    connect(socket, &QTcpSocket::readyRead, this, &Server::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected, this, &Server::slotDisconnected);
+    read_manager.addSocket(socket);
+    connect(&read_manager, &PackageReadManager::packageReceived,
+            this, &Server::slotPackageReceived);
 
     clients.push_back(QSharedPointer<Client>(new Client(socket)));
     auto client = clients.back();
@@ -193,43 +194,28 @@ static_assert(false, "No serializer defined.");
 }
 //_____________________________________________________________________________
 
-void Server::slotReadyRead()
+void Server::slotPackageReceived(QTcpSocket* socket,
+                                 const QJsonObject& header,
+                                 const QByteArray& argument)
 {
-    QTcpSocket *socket = qobject_cast<QTcpSocket *> (sender());
+    Q_ASSERT(socket != nullptr);
+    Q_ASSERT(!header.isEmpty());
+    Q_ASSERT(argument.size() > 0);
 
     curr_sender_id = socket->socketDescriptor();
 
-    uint64_t header_size = 0;
-
-    while (socket->read(reinterpret_cast<char*>(&header_size), sizeof(header_size)) ==
-           sizeof(header_size))
-    {
-        Q_ASSERT(header_size > 0);
-
-        QByteArray data = socket->read(header_size);
-        Q_ASSERT(static_cast<uint64_t>(data.size()) == header_size);
-
-        RequestHeader header;
+    RequestHeader header_obj;
+    header_obj.deserialize(header);
 
 #ifdef JSON_SERIALIZER
-        JsonSerializer(data).deserialize(header);
+    JsonSerializer serial_arg(argument);
 #else
 static_assert(false, "No serializer defined.");
 #endif
 
-        data = socket->read(header.argument_size);
-        Q_ASSERT(data.size() == header.argument_size);
-
-#ifdef JSON_SERIALIZER
-        JsonSerializer serial_arg(data);
-#else
-static_assert(false, "No serializer defined.");
-#endif
-
-        Q_ASSERT(api_func.contains(header.method));
-        qDebug() << "| Client" << socket->socketDescriptor() << "called" << header.method;
-        (this->*api_func[header.method])(serial_arg);
-    }
+    Q_ASSERT(api_func.contains(header_obj.method));
+    qDebug() << "| Client" << socket->socketDescriptor() << "called" << header_obj.method;
+    (this->*api_func[header_obj.method])(serial_arg);
 }
 //_____________________________________________________________________________
 
@@ -249,6 +235,7 @@ void Server::slotDisconnected()
         }
     }
 
+    read_manager.removeSocket(socket);
     socket->close();
 }
 //=============================================================================
