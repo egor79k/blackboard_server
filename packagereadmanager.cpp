@@ -67,7 +67,6 @@ void PackageReadManager::handleHeaderSizeRead(ReadState& state)
 {
     Q_ASSERT(state.status == header_size_read);
 
-    size_t test = state.socket->bytesAvailable();
     if (state.socket->bytesAvailable() >=
         static_cast<qint64>(state.header_size)) {
 
