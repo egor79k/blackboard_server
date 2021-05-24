@@ -5,6 +5,7 @@
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QByteArray>
 #include <QList>
 #include <QMap>
 #include <QSharedPointer>
@@ -17,6 +18,7 @@
 #include "layer.h"
 #include "serializers.h"
 #include "serializable_types.h"
+#include "packagereadmanager.h"
 
 
 //=============================================================================
@@ -40,7 +42,8 @@ public:
 
 public slots:
     void slotNewConnection(); // New pending connection
-    void slotReadyRead();     // Client socket ready to read
+    void slotPackageReceived(QTcpSocket* socket, const QJsonObject& header,
+                             const QByteArray& argument);
     void slotDisconnected();  // Client disconnected
 
 private:
@@ -53,6 +56,7 @@ private:
     QList<QSharedPointer<Client>> clients;
     QList<QSharedPointer<Layer>> scene;
     Client::id_type curr_sender_id;
+    PackageReadManager read_manager;
 };
 //=============================================================================
 
