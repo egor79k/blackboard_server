@@ -7,6 +7,8 @@
 Server::Server()
 {
     connect(this, &QTcpServer::newConnection, this, &Server::slotNewConnection);
+    connect(&read_manager, &PackageReadManager::packageReceived,
+            this, &Server::slotPackageReceived);
 }
 //_____________________________________________________________________________
 
@@ -173,8 +175,6 @@ void Server::slotNewConnection()
     QTcpSocket *socket = this->nextPendingConnection();
     connect(socket, &QTcpSocket::disconnected, this, &Server::slotDisconnected);
     read_manager.addSocket(socket);
-    connect(&read_manager, &PackageReadManager::packageReceived,
-            this, &Server::slotPackageReceived);
 
     clients.push_back(QSharedPointer<Client>(new Client(socket)));
     auto client = clients.back();
